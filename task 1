@@ -1,0 +1,96 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <cstdlib>
+#include <ctime>
+#include <algorithm>
+
+using namespace std;
+
+// 1. تعريف الـ Structure الخاص بالمنتج
+struct InventoryItem {
+    string itemCode;
+    string itemName;
+    double cost;
+    double sellingPrice;
+};
+
+// 2. دالة لإدخال بيانات صنف جديد وتوليد الرمز تلقائياً
+InventoryItem insertItem(int index) {
+    InventoryItem item;
+    cout << "\n--- Enter details for item " << (index + 1) << " ---\n";
+    cout << "Enter item name: ";
+    cin >> ws; // لتفريغ الـ buffer
+    getline(cin, item.itemName);
+
+    cout << "Enter item cost: ";
+    cin >> item.cost;
+
+    // حساب سعر البيع بناءً على نسبة ربح 40%
+    item.sellingPrice = item.cost * 1.40;
+
+    // توليد الرمز (Item Code): أول 3 حروف كبيرة + "_" + رقم عشوائي
+    string prefix = "";
+    string tempName = item.itemName;
+    
+    // تحويل اسم المنتج إلى أحرف كبيرة مؤقتاً لأخذ أول 3 أحرف
+    for (char &c : tempName) {
+        c = toupper(c);
+    }
+
+    if (tempName.length() >= 3) {
+        prefix = tempName.substr(0, 3);
+    } else {
+        prefix = tempName;
+        // إذا كان الاسم أقل من 3 أحرف نكملها بـ X مثلاً
+        while (prefix.length() < 3) prefix += "X";
+    }
+
+    // توليد رقم عشوائي (مثلاً يبدأ من 3123 أو عشوائي ضمن نطاق معين)
+    int randomNum = 3123 + (rand() % 900); // توليد رقم تسلسلي عشوائي مقارب للمثال
+    
+    // دمج العناصر مع شرطة سفلية
+    item.itemCode = prefix + "_" + to_string(randomNum);
+
+    return item;
+}
+
+// 3. دالة لعرض المخزون بشكل جدول مرتب
+void displayStock(const InventoryItem* stockArray, int size) {
+    cout << "\n\n=================================================================\n";
+    cout << setw(45) << "INVENTORY STOCK REPORT" << endl;
+    cout << "=================================================================\n";
+    cout << left << setw(15) << "Item Code" 
+         << setw(20) << "Item Name" 
+         << setw(15) << "Cost (Rs.)" 
+         << setw(15) << "Price (Rs.)" << endl;
+    cout << "-----------------------------------------------------------------\n";
+    
+    for (int i = 0; i < size; i++) {
+        cout << left << setw(15) << stockArray[i].itemCode 
+             << setw(20) << stockArray[i].itemName 
+             << setw(15) << fixed << setprecision(2) << stockArray[i].cost 
+             << setw(15) << fixed << setprecision(2) << stockArray[i].sellingPrice << endl;
+    }
+    cout << "=================================================================\n";
+}
+
+int main() {
+    // تهيئة الأرقام العشوائية
+    srand(static_cast<unsigned int>(time(0)));
+
+    const int TOTAL_ITEMS = 10;
+    InventoryItem stock[TOTAL_ITEMS];
+
+    cout << "=== Task 01 & Task 02: Inventory Management System ===\n";
+
+    // إدخال بيانات الـ 10 منتجات على الأقل
+    for (int i = 0; i < TOTAL_ITEMS; i++) {
+        stock[i] = insertItem(i);
+    }
+
+    // عرض الجدول النهائي للمخزون
+    displayStock(stock, TOTAL_ITEMS);
+
+    return 0;
+}
