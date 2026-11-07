@@ -1,0 +1,98 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+// الهياكل المعطاة في السؤال
+struct FeetInches {
+    int feet;
+    int inches;
+};
+
+struct RoomDimension {
+    FeetInches length;
+    FeetInches width;
+};
+
+// دالة لحساب تكلفة السجاد لكل غرفة (السعر 18 روبية لكل قدم مربع)
+double computeTheCarpetingCost(const RoomDimension& room) {
+    // تحويل الأبعاد إلى قدم (باعتبار الأجزاء البسيطة أو التركيز على الأقدام حسب المعطيات)
+    // لتسهيل الحساب الدقيق: إجمالي الأقدام = الأقدام + (البوصات / 12.0)
+    double lengthInFeet = room.length.feet + (room.length.inches / 12.0);
+    double widthInFeet = room.width.feet + (room.width.inches / 12.0);
+    
+    double area = lengthInFeet * widthInFeet;
+    double pricePerSquareFoot = 18.0; // 18 Rs. per square foot
+    
+    return area * pricePerSquareFoot;
+}
+
+int main() {
+    int numRooms;
+    cout << "=== Carpet Company Estimation System ===\n";
+    cout << "Enter the number of rooms in your house: ";
+    cin >> numRooms;
+
+    if (numRooms <= 0) {
+        cout << "Invalid number of rooms!\n";
+        return 0;
+    }
+
+    // إنشاء مصفوفة ديناميكية بناءً على إدخال المستخدم
+    RoomDimension* rooms = new RoomDimension[numRooms];
+
+    // طلب أبعاد كل غرفة من المستخدم
+    for (int i = 0; i < numRooms; i++) {
+        cout << "\n--- Enter dimensions for Room " << (i + 1) << " ---\n";
+        cout << "Length - Feet: ";
+        cin >> rooms[i].length.feet;
+        cout << "Length - Inches: ";
+        cin >> rooms[i].length.inches;
+        
+        cout << "Width - Feet: ";
+        cin >> rooms[i].width.feet;
+        cout << "Width - Inches: ";
+        cin >> rooms[i].width.inches;
+    }
+
+    int choice;
+    do {
+        cout << "\n\n========= MENU =========\n";
+        cout << "1. Display carpeting cost for each room separately\n";
+        cout << "2. Display total carpeting cost for the entire house\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice (1-3): ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                cout << "\n--- Cost Per Room ---\n";
+                for (int i = 0; i < numRooms; i++) {
+                    double cost = computeTheCarpetingCost(rooms[i]);
+                    cout << "Room " << (i + 1) << " Cost: Rs. " 
+                         << fixed << setprecision(2) << cost << endl;
+                }
+                break;
+            }
+            case 2: {
+                double totalHouseCost = 0;
+                for (int i = 0; i < numRooms; i++) {
+                    totalHouseCost += computeTheCarpetingCost(rooms[i]);
+                }
+                cout << "\n=> Total Carpeting Cost for the House: Rs. " 
+                     << fixed << setprecision(2) << totalHouseCost << endl;
+                break;
+            }
+            case 3:
+                cout << "Exiting program. Thank you!\n";
+                break;
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+    } while (choice != 3);
+
+    // تحرير الذاكرة الديناميكية لتجنب Memory Leaks
+    delete[] rooms;
+
+    return 0;
+}
